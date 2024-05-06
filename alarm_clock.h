@@ -15,12 +15,14 @@ private:
     Ticker countTime;
 
 public:
-    alarm_clock(int second, int minute, int hour); // Constructor declaration
+    alarm_clock(int second, int minute, int hour, bool update); // Constructor declaration
+    alarm_clock(bool update);
     void updateTime();
     string getSecond();
     string getMinute();
     string getHour();
     void displayTime();
+    void setTime(int hour,int minute, int second);
 };
 
 

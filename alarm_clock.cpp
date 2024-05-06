@@ -1,12 +1,23 @@
+//Michael Brandmeyer
 #include "mbed.h"
 #include "alarm_clock.h"
 #include "NHD_0216HZ.h"
 #include <string>
 
 
+//default constructor
+alarm_clock::alarm_clock(bool update){
+    if (update == true)
+        countTime.attach(callback(this, &alarm_clock::updateTime), 1);
 
-alarm_clock::alarm_clock(int hour,int minute, int second){
-    countTime.attach(callback(this, &alarm_clock::updateTime), 1);
+    this->second = 0;
+    this->minute = 0;
+    this->hour = 0;
+}
+
+alarm_clock::alarm_clock(int hour,int minute, int second, bool update = true){
+    if (update == true)
+        countTime.attach(callback(this, &alarm_clock::updateTime), 1);
 
     //exception handling for invalid time
     if(second > 59){
@@ -26,6 +37,25 @@ alarm_clock::alarm_clock(int hour,int minute, int second){
     this->hour = hour;
 }
 
+void alarm_clock::setTime(int hour,int minute, int second){
+    
+    //exception handling for invalid time
+    if(second > 59){
+        minute += (int)second/60;
+        second = second % 60;
+    }
+    if(minute > 59){
+        hour += (int)minute/60;
+        minute = minute % 60;
+    }
+    if(hour > 23){
+        hour = hour % 24;
+    }
+    
+    this->second = second;
+    this->minute = minute;
+    this->hour = hour;
+}
 
 void alarm_clock::updateTime(){
     this->second +=1;
