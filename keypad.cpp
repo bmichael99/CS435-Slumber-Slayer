@@ -1,3 +1,4 @@
+//Jonathon
 #include "mbed.h"
 
 
@@ -59,18 +60,5 @@ public:
     }
 };
 
-
-int main() {
-    MatrixKeypad keypad;
-    printf("Matrix Keypad Test\n");
-    
-    while (1) {
-        char key = keypad.readKey();
-        if (key != '\0') {
-            printf("Pressed key: %c\n", key);
-            ThisThread::sleep_for(200); 
-        }
-    }
-}
 
 
