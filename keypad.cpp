@@ -3,16 +3,16 @@
 
 
 // Define pins for the matrix keypad
-#define ROW_COUNT 4
-#define COL_COUNT 3
+#define ROW 4
+#define COL 3
 
 
-DigitalInOut row_pins[ROW_COUNT] = {D8, D7, D6,D5};
-DigitalInOut col_pins[COL_COUNT] = {D4,D3,D2};
+DigitalInOut row_pins[ROW] = {D8, D7, D6,D5};
+DigitalInOut col_pins[COL] = {D4,D3,D2};
 
 
 // Define the keys
-char keys[ROW_COUNT][COL_COUNT] = {
+char keys[ROW][COL] = {
     {'1', '2', '3'},
     {'4', '5', '6'},
     {'7', '8', '9'},
@@ -29,19 +29,19 @@ public:
         char pressedKey = '\0';
         
         // Set all row pins as inputs with pull-up
-        for (int i = 0; i < ROW_COUNT; i++) {
+        for (int i = 0; i < ROW; i++) {
             row_pins[i].input();
             row_pins[i].mode(PullUp);
         }
         
         // Set all column pins as outputs and high
-        for (int j = 0; j < COL_COUNT; j++) {
+        for (int j = 0; j < COL; j++) {
             col_pins[j].output();
             col_pins[j].write(1);
         }
         
         // Check each column pin
-        for (int col = 0; col < COL_COUNT; col++) {
+        for (int col = 0; col < COL; col++) {
             col_pins[col].write(0); // Set the current column pin low
             
             // Check each row pin
