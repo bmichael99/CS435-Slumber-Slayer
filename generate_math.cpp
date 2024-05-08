@@ -54,9 +54,6 @@ void generate_math::calculateResult() {
         case '+':
             result = operand1 + operand2;
             break;
-        case '-':
-            result = operand1 - operand2;
-            break;
         case '*':
             result = operand1 * operand2;
             break;
