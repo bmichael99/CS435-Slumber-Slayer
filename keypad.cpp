@@ -45,7 +45,7 @@ public:
             col_pins[col].write(0); // Set the current column pin low
             
             // Check each row pin
-            for (int row = 0; row < ROW_COUNT; row++) {
+            for (int row = 0; row < ROW; row++) {
                 if (!row_pins[row].read()) { // Check if the row pin is low
                     pressedKey = keys[row][col];
                     break;
