@@ -42,7 +42,7 @@ public:
         
         // check each column pin
         for (int col = 0; col < COL; col++) {
-            col_pins[col].write(0); // Set the current column pin low
+            col_pins[col].write(0); // set the current column pin low
             
             // check each row pin
             for (int row = 0; row < ROW; row++) {
