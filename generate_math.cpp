@@ -20,15 +20,22 @@ generate_math::generate_math() {
 void generate_math::generateNewEquation() {
     operand1 = rand() % 10; // Numbers between 0 and 9
     operand2 = rand() % 10;
-    int op = rand() % 2; // Choose an operation: 0 or 1
+    if(operand1 < operand2){
+        int temp = operand1;
+        operand1 = operand2;
+        operand2 = temp;
+    }
+    int op = rand() % 3; // Choose an operation: 0, 1, or 2
     switch (op) {
         case 0:
             operation = '+';
             break;
         case 1:
+            operation = '-';
+            break;
+        case 2:
             operation = '*';
             break;
-        
     }
     calculateResult();
 }
@@ -53,6 +60,9 @@ void generate_math::calculateResult() {
     switch (operation) {
         case '+':
             result = operand1 + operand2;
+            break;
+        case '-':
+            result = operand1 - operand2;
             break;
         case '*':
             result = operand1 * operand2;
