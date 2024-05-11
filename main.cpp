@@ -143,11 +143,6 @@ int main() {
         }
         ThisThread::sleep_for(200); //sleep for 200ms
      }
-
-    
-    
-
-
 }
 
 void set_time(){
@@ -353,6 +348,7 @@ void clearlcd(){
 
 void cooldown(){
     checkAlarm_t.attach(&check_alarm, 1);
+    alarmCooldown.detach();
 }
 
 void countMoving(){
