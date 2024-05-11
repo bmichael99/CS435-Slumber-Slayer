@@ -9,23 +9,23 @@ using namespace std;
 
 
 
-// Constructor
+//constructor
 generate_math::generate_math() {
-    // Initialize random seed
+    //initialize random seed
     srand(time(0));
     generateNewEquation();
 }
 
-// Generate a new equation
+//generate a new equation
 void generate_math::generateNewEquation() {
-    operand1 = rand() % 10; // Numbers between 0 and 9
+    operand1 = rand() % 10; //numbers between 0 and 9
     operand2 = rand() % 10;
     if(operand1 < operand2){
         int temp = operand1;
         operand1 = operand2;
         operand2 = temp;
     }
-    int op = rand() % 3; // Choose an operation: 0, 1, or 2
+    int op = rand() % 3; //choose an operation: 0, 1, or 2
     switch (op) {
         case 0:
             operation = '+';
@@ -40,22 +40,22 @@ void generate_math::generateNewEquation() {
     calculateResult();
 }
 
-// Get the equation as a string
+//get the equation as a string
 string generate_math::getEquation() const {
     return to_string(operand1) + " " + operation + " " + to_string(operand2) + " = ?";
 }
 
-// Check the answer
+//check the answer
 bool generate_math::checkAnswer(int userAnswer) const {
     return userAnswer == result;
 }
 
-// Get the correct answer (for display purposes)
+//get the correct answer (for display purposes)
 int generate_math::getCorrectAnswer() const {
     return result;
 }
 
-// Helper function to calculate the result
+//helper function to calculate the result
 void generate_math::calculateResult() {
     switch (operation) {
         case '+':
