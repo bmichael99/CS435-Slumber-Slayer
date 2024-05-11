@@ -24,7 +24,7 @@ char keys[ROW_COUNT][COL_COUNT] = {
     {'4', '5', '6'},
     {'7', '8', '9'},
     {'*', '0', '#'}
-};
+}; 
 
 
 class MatrixKeypad {
@@ -82,15 +82,21 @@ bool answerMath();
 void cooldown();
 void Moving();
 void notMoving();
+void countMoving();
 
 Ticker checkAlarm_t; //ticker to check if alarm == current time
 Ticker alarmCooldown; //ticker for putting checkAlarm_t on a 60 second cooldown after alarm is finished
+Ticker totalMoving;
 Timer motionTime; //time since last time 
 
 //values changed inside of different ISR's
 volatile bool alarm = false; //check_alarm()
-volatile bool moving; //Moving() and notMoving()
-volatile float totalTimeMoving;
+volatile bool moving = false; //Moving() and notMoving()
+volatile bool updateTime = false;
+const int alarmTime = 20; // amount of time the user needs to be moving
+volatile int totalTimeMoving = alarmTime;
+
+
 
 int main() {
     init_spi();
@@ -117,27 +123,20 @@ int main() {
             set_cursor(0, 1);
             print_lcd("TIME TO WAKE UP!");
             ThisThread::sleep_for(2000);
+            totalMoving.attach(&countMoving, 1);
             while(1){
-                if(moving == true){
-                    if(answerMath())  {         
-                        motionTime.stop();
-                        totalTimeMoving += motionTime.read();
-                        motionTime.start();   
-                        printf("moving & correct answer");
-                        if(totalTimeMoving >= 20){ //final condition to end alarm
-                            player.stopMusic();
-                            alarm = false;
-                            checkAlarm_t.detach(); //disable alarm checker
-                            alarmCooldown.attach(&cooldown, 60); //re-enable alarm checker after 60 seconds
-                            totalTimeMoving = 0;
-                            clearlcd();
-                            motionTime.stop();
-                            break;
-                        }
+                if(answerMath() && moving == true){   
+                    printf("moving & correct answer");
+                    if(totalTimeMoving <= 0){ //final condition to end alarm
+                        player.stopMusic();
+                        alarm = false;
+                        checkAlarm_t.detach(); //disable alarm checker
+                        totalMoving.detach();
+                        alarmCooldown.attach(&cooldown, 60); //re-enable alarm checker after 60 seconds
+                        totalTimeMoving = alarmTime;
+                        clearlcd();
+                        break;
                     }
-                } else {
-                    motionTime.reset(); //set current time moving to 0
-                    totalTimeMoving = 0; //set total moving time to 0 if we detect no movement
                 }
                 ThisThread::sleep_for(200);
             }
@@ -172,6 +171,7 @@ void set_time(){
                     int minute = stoi(lcd_time.substr(3, 2));
                     int second = stoi(lcd_time.substr(6, 2));
                     myClock.setTime(hour,minute,second);
+                    ThisThread::sleep_for(500); 
                     break;
                 }
             } else if(key == '*') { //backspace
@@ -268,6 +268,8 @@ void Moving(){
 
 void notMoving(){
     moving = false;
+    totalTimeMoving = alarmTime; //reset totaltimemoving if we detect no movement
+    updateTime = true;
 }
 
 bool answerMath(){
@@ -283,6 +285,16 @@ bool answerMath(){
     string mathAnswer = "";
 
     while(1){
+        if(updateTime == true){
+            set_cursor(13,1);
+            print_lcd("  ");
+            set_cursor(13,1);
+            string timeleft = to_string(totalTimeMoving);
+            print_lcd(&timeleft[0]);
+            updateTime = false;
+            set_cursor(i,1);
+        }
+        
         char key = keypad.readKey();
         if (key != '\0') {
             printf("Pressed key: %c\n", key);
@@ -293,14 +305,15 @@ bool answerMath(){
                         mathAnswer = "";
                         i = 0;
                         set_cursor(0,1);
-                        print_lcd("        ");
+                        print_lcd("      ");
                     }  
             } else { //typing answer
-                mathAnswer += key;
-                set_cursor(0,1);
-                print_lcd(&mathAnswer[0]);
-                i+=1;
-                
+                if(i < 4){
+                    mathAnswer += key;
+                    set_cursor(0,1);
+                    print_lcd(&mathAnswer[0]);
+                    i+=1;
+                }
             }
             set_cursor(i,1);
             ThisThread::sleep_for(500);
@@ -312,21 +325,20 @@ bool answerMath(){
         clearlcd();
         set_cursor(0, 0);
         print_lcd("Correct!");
-        ThisThread::sleep_for(2000);
+        ThisThread::sleep_for(1000);
         set_cursor(0, 0);
         print_lcd("Keep moving to");
         set_cursor(0, 1);
         print_lcd("turn off alarm");
-        ThisThread::sleep_for(2000);
+        ThisThread::sleep_for(1500);
         clearlcd();
         return true;
     } else{
         clearlcd();
         set_cursor(0, 0);
         print_lcd("WRONG ANSWER!");
-        ThisThread::sleep_for(2000);
-        motionTime.reset();
-        totalTimeMoving = 0; //maybe turn this off
+        ThisThread::sleep_for(1500);
+        totalTimeMoving = alarmTime;
         return false;
     }
         
@@ -334,9 +346,20 @@ bool answerMath(){
 
 void clearlcd(){
     set_cursor(0, 0);
-    print_lcd("                                                              ");
+    print_lcd("                               ");
+    set_cursor(0,1);
+    print_lcd("                               ");
 }
 
 void cooldown(){
     checkAlarm_t.attach(&check_alarm, 1);
+}
+
+void countMoving(){
+    if(moving == true){
+        if(totalTimeMoving > 0){
+            totalTimeMoving -=1;
+            updateTime = true;
+        }
+    }
 }

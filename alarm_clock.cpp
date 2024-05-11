@@ -14,7 +14,6 @@ alarm_clock::alarm_clock(bool update){
     this->minute = 0;
     this->hour = 0;
 }
-
 alarm_clock::alarm_clock(int hour,int minute, int second, bool update = true){
     if (update == true)
         countTime.attach(callback(this, &alarm_clock::updateTime), 1);
@@ -71,8 +70,6 @@ void alarm_clock::updateTime(){
         this->hour = 0;
     }
 }
-
-
 string alarm_clock::getSecond(){
     string str_second = to_string(this->second);
     return str_second;
